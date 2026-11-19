@@ -51,14 +51,10 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/adhyyanverma9080-max/adhyyanverma9080-max/output/github-dragon-dark.svg" />
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/adhyyanverma9080-max/adhyyanverma9080-max/output/github-dragon.svg" />
-    <img alt="Contribution dragon" src="https://raw.githubusercontent.com/adhyyanverma9080-max/adhyyanverma9080-max/output/github-dragon-dark.svg" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/adhyyanverma9080-max/adhyyanverma9080-max/output/github-dragon-dark.svg?v=2" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/adhyyanverma9080-max/adhyyanverma9080-max/output/github-dragon.svg?v=2" />
+    <img alt="Contribution dragon" src="https://raw.githubusercontent.com/adhyyanverma9080-max/adhyyanverma9080-max/output/github-dragon-dark.svg?v=2" />
   </picture>
-</p>
-
-<p align="center">
-  <img src="https://github-readme-activity-graph.vercel.app/graph?username=adhyyanverma9080-max&bg_color=0d1117&color=58a6ff&line=58a6ff&point=ffffff&area=true&area_color=58a6ff&hide_border=true" alt="Activity Graph" />
 </p>
 
 ---
