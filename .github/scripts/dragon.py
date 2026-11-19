@@ -14,6 +14,8 @@ TOKEN = os.environ.get("GITHUB_TOKEN", "")
 STEP, SIZE = 15, 12            # cell pitch / cell size (px)
 PAD_X, PAD_Y = 28, 34
 SPEED = 260.0                  # dragon speed in px per second
+WAVE = 5.0                     # sideways swim amplitude in px (0 = straight lines)
+WAVES_PER_COLUMN = 1.5         # how many S-bends per column sweep
 PAUSE = 2.0                    # seconds of rest before the loop restarts
 
 # ---- Tokyo Night palette ----------------------------------------------------
@@ -77,16 +79,36 @@ def build(weeks):
     cx = lambda c: PAD_X + c * STEP + half
     cy = lambda r: PAD_Y + r * STEP + half
     R = STEP / 2
-    col_len, arc_len = 6 * STEP, math.pi * R
-    total = cols * col_len + (cols - 1) * arc_len
 
-    # smooth serpentine path: straight sweeps joined by semicircular turns
-    d = [f"M{cx(0):.2f},{cy(0):.2f}"]
+    # dense polyline: wavy sweeps joined by semicircular turns (exact length is measured)
+    pts, col_samples = [], [[] for _ in range(cols)]
+    def add(x, y, c=None):
+        if pts:
+            dist = pts[-1][2] + math.hypot(x - pts[-1][0], y - pts[-1][1])
+        else:
+            dist = 0.0
+        pts.append((x, y, dist))
+        if c is not None:
+            col_samples[c].append((y, dist))
     for c in range(cols):
-        d.append(f"L{cx(c):.2f},{cy(6 if c % 2 == 0 else 0):.2f}")
+        down = c % 2 == 0
+        y0, y1 = (cy(0), cy(6)) if down else (cy(6), cy(0))
+        n = 44
+        for i in range(n + 1):
+            t = i / n
+            y = y0 + (y1 - y0) * t
+            # wave fades to zero at both ends so it joins the turns cleanly
+            x = cx(c) + WAVE * math.sin(t * WAVES_PER_COLUMN * 2 * math.pi) * math.sin(t * math.pi)
+            add(x, y, c)
         if c < cols - 1:
-            d.append(f"A{R},{R} 0 0 {0 if c % 2 == 0 else 1} {cx(c+1):.2f},{cy(6 if c % 2 == 0 else 0):.2f}")
-    path = " ".join(d)
+            m = 14
+            for i in range(1, m + 1):
+                a = math.pi * i / m
+                x = cx(c) + R - R * math.cos(a)
+                y = y1 + (R * math.sin(a) if down else -R * math.sin(a))
+                add(x, y)
+    total = pts[-1][2]
+    path = "M" + " L".join(f"{x:.1f},{y:.1f}" for x, y, _ in pts)
 
     travel = total / SPEED
     dur = travel + PAUSE
@@ -99,6 +121,7 @@ def build(weeks):
          f'<filter id="bloom" filterUnits="userSpaceOnUse" x="0" y="0" width="{W:.0f}" height="{H}"><feGaussianBlur stdDeviation="4"/></filter>'
          f'<filter id="soft" filterUnits="userSpaceOnUse" x="0" y="0" width="{W:.0f}" height="{H}"><feGaussianBlur stdDeviation="1.4"/></filter>'
          f'<linearGradient id="headGrad" x1="0" x2="1"><stop offset="0" stop-color="{VIOLET}"/><stop offset="1" stop-color="{CYAN}"/></linearGradient>'
+         f'<path id="route" d="{path}"/>'
          '</defs>',
          f'<rect x="0.5" y="0.5" width="{W-1:.0f}" height="{H-1}" rx="10" fill="{BG}" stroke="{BORDER}"/>']
 
@@ -111,7 +134,7 @@ def build(weeks):
             if lv == 0:
                 s.append(base + "/>")
                 continue
-            dist = c * (col_len + arc_len) + (r * STEP if c % 2 == 0 else (6 - r) * STEP)
+            dist = min(col_samples[c], key=lambda sm: abs(sm[0] - (y + half)))[1]
             t = max((dist - 6) / SPEED / dur, 0.002)
             t2, t3 = t + 0.25 / dur, t + 0.9 / dur
             s.append(base + f'><animate attributeName="fill" calcMode="discrete" dur="{dur:.2f}s" repeatCount="indefinite" '
@@ -121,11 +144,11 @@ def build(weeks):
     # fire trail: layered dashes (long & faint -> short & hot) travelling with the dragon
     def trail(length, width, color, opacity, flt=""):
         off = f"{length:.1f};{length - total:.1f};{length - total:.1f}"
-        return (f'<path d="{path}" fill="none" stroke="{color}" stroke-width="{width}" stroke-linecap="round" '
+        return (f'<use href="#route" fill="none" stroke="{color}" stroke-width="{width}" stroke-linecap="round" '
                 f'stroke-linejoin="round" opacity="{opacity}" {flt} stroke-dasharray="{length:.1f} {total + length:.1f}" '
                 f'stroke-dashoffset="{length:.1f}">'
                 f'<animate attributeName="stroke-dashoffset" dur="{dur:.2f}s" repeatCount="indefinite" '
-                f'keyTimes="0;{f:.4f};1" values="{off}"/></path>')
+                f'keyTimes="0;{f:.4f};1" values="{off}"/></use>')
 
     fade = (f'<animate attributeName="opacity" dur="{dur:.2f}s" repeatCount="indefinite" calcMode="discrete" '
             f'keyTimes="0;{f:.4f}" values="1;0"/>')
@@ -141,7 +164,7 @@ def build(weeks):
     # the head, turning smoothly through every bend
     s.append(f'<g>{fade}<g>{head_group()}'
              f'<animateMotion dur="{dur:.2f}s" repeatCount="indefinite" rotate="auto" calcMode="linear" '
-             f'keyPoints="0;1;1" keyTimes="0;{f:.4f};1" path="{path}"/></g></g>')
+             f'keyPoints="0;1;1" keyTimes="0;{f:.4f};1"><mpath href="#route"/></animateMotion></g></g>')
 
     s.append(f'<text x="{W/2:.0f}" y="{H-12}" font-size="10" fill="{MUTED}" text-anchor="middle" '
              f'font-family="ui-monospace,SFMono-Regular,Menlo,monospace">the dragon burns through my contributions</text>')
