@@ -1,5 +1,5 @@
 """
-Tokyo Night contribution dragon.
+Tokyo Night contribution dragon (vector silhouette).
 
 Pulls your real contribution calendar from GitHub and draws an animated SVG:
 a pixel-art dragon flies a smooth serpentine path over the grid, leaving a
@@ -15,7 +15,6 @@ STEP, SIZE = 15, 12            # cell pitch / cell size (px)
 PAD_X, PAD_Y = 28, 34
 SPEED = 260.0                  # dragon speed in px per second
 PAUSE = 2.0                    # seconds of rest before the loop restarts
-PX = 1.5                       # size of one dragon "pixel"
 
 # ---- Tokyo Night palette ----------------------------------------------------
 BG, BORDER = "#1a1b27", "#2f334d"
@@ -23,51 +22,30 @@ EMPTY = "#24283b"
 LEVELS = [EMPTY, "#394b70", "#3d59a1", "#7aa2f7", "#7dcfff"]
 CYAN, PURPLE, VIOLET, WHITE, MUTED = "#7dcfff", "#bb9af7", "#9d7cd8", "#c0caf5", "#565f89"
 
-# ---- pixel-art dragon (faces right). Each entry: (colour key, x1, x2, y) ----
-GRID_W, GRID_H = 24, 12
-BODY = [
-    ("H", 18, 19, 3),                                   # horns
-    ("B", 18, 21, 4),                                   # skull
-    ("B", 17, 23, 5), ("E", 20, 20, 5),                 # head + eye
-    ("B", 10, 22, 6), ("B", 6, 16, 7),                  # neck + back
-    ("B", 5, 6, 8), ("S", 7, 14, 8), ("B", 15, 16, 8),  # belly
-    ("T", 3, 4, 8), ("T", 1, 2, 9), ("S", 0, 0, 10),    # tail
-    ("L", 8, 8, 9), ("L", 13, 13, 9), ("L", 8, 9, 10), ("L", 13, 14, 10),  # legs
-    ("H", 7, 7, 6), ("H", 9, 9, 6),                     # back spikes
-]
-WING_UP = [
-    ("G", 7, 7, 0), ("G", 7, 7, 1), ("W", 8, 8, 1),
-    ("G", 7, 7, 2), ("W", 8, 9, 2),
-    ("G", 8, 8, 3), ("W", 9, 11, 3),
-    ("G", 9, 9, 4), ("W", 10, 13, 4),
-    ("G", 10, 10, 5), ("W", 11, 14, 5),
-]
-WING_DOWN = [
-    ("G", 7, 7, 4), ("W", 8, 11, 4),
-    ("G", 4, 4, 5), ("W", 5, 12, 5),
-    ("G", 6, 6, 6), ("W", 7, 9, 6),
-]
-COLORS = {"B": VIOLET, "S": CYAN, "H": CYAN, "E": WHITE, "L": VIOLET,
-          "T": PURPLE, "W": PURPLE, "G": CYAN}
-
-
-def sprite_rects(spec):
-    out = []
-    for ch, x1, x2, y in spec:
-        out.append(f'<rect x="{x1*PX:.2f}" y="{y*PX:.2f}" width="{(x2-x1+1)*PX+0.15:.2f}" '
-                   f'height="{PX+0.15:.2f}" fill="{COLORS[ch]}"/>')
-    return "".join(out)
-
-
-def dragon_group():
-    w, h = GRID_W * PX, GRID_H * PX
-    flap = '<animate attributeName="opacity" calcMode="discrete" dur="0.5s" repeatCount="indefinite" keyTimes="0;0.5" values="{}"/>'
+# ---- vector dragon head (faces right, origin at the neck) -------------------
+def head_group():
     return (
-        f'<g filter="url(#glow)"><g transform="translate({-w/2:.2f},{-h/2:.2f})" shape-rendering="crispEdges">'
-        f'<g>{sprite_rects(WING_UP)}{flap.format("1;0")}</g>'
-        f'<g>{sprite_rects(WING_DOWN)}{flap.format("0;1")}</g>'
-        f'{sprite_rects(BODY)}</g></g>'
+        '<g filter="url(#glow)">'
+        # horns
+        f'<path d="M-3,-5 C-6,-10 -12,-11 -17,-9 C-12,-8 -8,-6 -5,-3 Z" fill="{CYAN}"/>'
+        f'<path d="M0,-6 C-2,-12 -7,-14 -12,-14 C-8,-11 -4,-8 -2,-5 Z" fill="{PURPLE}"/>'
+        # whiskers
+        f'<path d="M14,0 C20,4 24,2 29,6" fill="none" stroke="{CYAN}" stroke-width="0.9" stroke-linecap="round"/>'
+        f'<path d="M12,-2 C18,-8 22,-6 27,-10" fill="none" stroke="{CYAN}" stroke-width="0.9" stroke-linecap="round"/>'
+        # skull, snout and jaw
+        '<path d="M-6,-5 C-2,-7.5 6,-7.5 12,-3.5 L17.5,-2.5 C18.8,-2 18.8,0.8 17.5,1.3 L12,2 '
+        'C8,5.5 0,6.5 -6,5 Z" fill="url(#headGrad)"/>'
+        f'<path d="M12,1.2 L17,0.4" stroke="{BG}" stroke-width="0.7" stroke-linecap="round"/>'
+        # eye
+        f'<circle cx="6.5" cy="-2.2" r="1.5" fill="{WHITE}"/><circle cx="6.9" cy="-2.2" r="0.6" fill="{BG}"/>'
+        '</g>'
     )
+
+
+def lerp_color(a, b, t):
+    a = [int(a[i:i+2], 16) for i in (1, 3, 5)]
+    b = [int(b[i:i+2], 16) for i in (1, 3, 5)]
+    return "#" + "".join(f"{round(x + (y - x) * t):02x}" for x, y in zip(a, b))
 
 
 # ---- data -------------------------------------------------------------------
@@ -120,6 +98,7 @@ def build(weeks):
          '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
          f'<filter id="bloom" filterUnits="userSpaceOnUse" x="0" y="0" width="{W:.0f}" height="{H}"><feGaussianBlur stdDeviation="4"/></filter>'
          f'<filter id="soft" filterUnits="userSpaceOnUse" x="0" y="0" width="{W:.0f}" height="{H}"><feGaussianBlur stdDeviation="1.4"/></filter>'
+         f'<linearGradient id="headGrad" x1="0" x2="1"><stop offset="0" stop-color="{VIOLET}"/><stop offset="1" stop-color="{CYAN}"/></linearGradient>'
          '</defs>',
          f'<rect x="0.5" y="0.5" width="{W-1:.0f}" height="{H-1}" rx="10" fill="{BG}" stroke="{BORDER}"/>']
 
@@ -150,15 +129,17 @@ def build(weeks):
 
     fade = (f'<animate attributeName="opacity" dur="{dur:.2f}s" repeatCount="indefinite" calcMode="discrete" '
             f'keyTimes="0;{f:.4f}" values="1;0"/>')
-    s.append('<g>' + fade
-             + trail(150, 11, VIOLET, 0.55, 'filter="url(#bloom)"')
-             + trail(100, 7, PURPLE, 0.75, 'filter="url(#soft)"')
-             + trail(62, 4.5, CYAN, 0.9, 'filter="url(#soft)"')
-             + trail(30, 2.2, WHITE, 1)
-             + '</g>')
+    # glowing aura + tapered, gradient dragon body (stacked dashes: thin tail -> thick neck)
+    layers = trail(190, 15, VIOLET, 0.35, 'filter="url(#bloom)"')
+    n = 9
+    for i in range(n):
+        t = i / (n - 1)
+        length = 170 - t * 140
+        layers += trail(length, 2.0 + t * 4.6, lerp_color("#6f4fc4", CYAN, t), 1)
+    s.append('<g>' + fade + layers + '</g>')
 
-    # the dragon itself, banking smoothly through every turn
-    s.append(f'<g>{fade}<g>{dragon_group()}'
+    # the head, turning smoothly through every bend
+    s.append(f'<g>{fade}<g>{head_group()}'
              f'<animateMotion dur="{dur:.2f}s" repeatCount="indefinite" rotate="auto" calcMode="linear" '
              f'keyPoints="0;1;1" keyTimes="0;{f:.4f};1" path="{path}"/></g></g>')
 
