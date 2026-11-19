@@ -1,4 +1,3 @@
-## Hi there 👋
 <h1 align="center">Hi, I'm Adhyyan Verma ✦</h1>
 <h3 align="center">Frontend & UI Enthusiast | Building Clean, Modern Web Experiences</h3>
 
@@ -48,6 +47,22 @@
 
 ---
 
+## 🐉 Contribution Graph
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/adhyyanverma9080-max/adhyyanverma9080-max/output/github-dragon-dark.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/adhyyanverma9080-max/adhyyanverma9080-max/output/github-dragon.svg" />
+    <img alt="Contribution dragon" src="https://raw.githubusercontent.com/adhyyanverma9080-max/adhyyanverma9080-max/output/github-dragon-dark.svg" />
+  </picture>
+</p>
+
+<p align="center">
+  <img src="https://github-readme-activity-graph.vercel.app/graph?username=adhyyanverma9080-max&bg_color=0d1117&color=58a6ff&line=58a6ff&point=ffffff&area=true&area_color=58a6ff&hide_border=true" alt="Activity Graph" />
+</p>
+
+---
+
 ## 🌐 Connect With Me
 
 <p align="left">
@@ -65,17 +80,3 @@
 ---
 
 <h3 align="center">✨ "Good design is invisible. Great code is reliable." ✨</h3>
-<!--
-**adhyyanverma9080-max/adhyyanverma9080-max** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-
-Here are some ideas to get you started:
-
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
