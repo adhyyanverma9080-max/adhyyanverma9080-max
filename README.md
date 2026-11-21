@@ -2,14 +2,18 @@
 <h3 align="center">Frontend & UI Enthusiast | Building Clean, Modern Web Experiences</h3>
 
 <p align="center">
-  <a href="https://git.io/typing-svg">
-    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=38BDF8&center=true&vCenter=true&width=600&lines=Welcome+to+my+GitHub+Profile!;Passionate+Web+Developer;Always+Learning+%26+Building+Cool+Stuff" alt="Typing SVG" />
-  </a>
+  <img src="assets/typing-header.svg" alt="Frontend Developer | Backend Developer | UI Enthusiast | Clean Code Lover" />
+</p>
+
+<p align="center">
+  <img src="assets/pixel-dragon.svg" width="320" alt="Pixel dragon" />
+  <img src="assets/pixel-hacker-girl.svg" width="320" alt="Pixel hacker girl" />
 </p>
 
 <p align="center">
   <img src="https://komarev.com/ghpvc/?username=adhyyanverma9080-max&label=Profile%20views&color=0e75b6&style=flat" alt="Profile Views" />
 </p>
+
 ---
 
 ## 🚀 About Me
