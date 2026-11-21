@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/pixel-hacker-girl.svg" width="320" alt="Pixel hacker girl" />
+ <img src="assets/pixel-hacker-girl.svg" width="320" alt="Pixel hacker girl" />
 </p>
 
 <p align="center">
