@@ -6,9 +6,8 @@
 </p>
 
 <p align="center">
- <img src="assets/pixel-hacker-girl.svg" width="320" alt="Pixel hacker girl" />
+<img src="assets/neon-hacker-girl.svg" width="320" alt="Neon hacker girl" />
 </p>
-
 <p align="center">
   <img src="https://komarev.com/ghpvc/?username=adhyyanverma9080-max&label=Profile%20views&color=0e75b6&style=flat" alt="Profile Views" />
 </p>
