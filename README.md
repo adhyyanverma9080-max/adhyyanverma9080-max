@@ -75,7 +75,3 @@
 ---
 
 <h3 align="center">✨ "Good design is invisible. Great code is reliable." ✨</h3>
-
-<p align="center">
-  <img src="assets/dragon.gif" width="300" alt="Pixel dragon" />
-</p>
