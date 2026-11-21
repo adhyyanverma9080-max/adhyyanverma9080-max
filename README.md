@@ -6,7 +6,6 @@
 </p>
 
 <p align="center">
-  <img src="assets/pixel-dragon.svg" width="320" alt="Pixel dragon" />
   <img src="assets/pixel-hacker-girl.svg" width="320" alt="Pixel hacker girl" />
 </p>
 
